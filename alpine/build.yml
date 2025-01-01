@@ -1,0 +1,12 @@
+name: 'Build Alpine'
+description: 'Build Alpine wsl container'
+inputs:
+  setup-script:  # id of input
+    description: 'Choose setup script'
+    required: true
+    default: 'entrypoint.sh'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  env:
+    - SCRIPT_TO_EXECUTE: ${{ setup-script }}
