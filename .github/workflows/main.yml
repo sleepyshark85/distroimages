@@ -1,0 +1,26 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file alpine/Dockerfile --tag my-alpine:3.21
+    - uses: docker/build-push-action@v2
+      with:
+        tags: my-alpine:3.21
+        push: false
+    - uses: addnab/docker-run-action@v3
+      with:
+        image: my-alpine:3.21
+        run: echo "hello world"
