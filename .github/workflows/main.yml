@@ -9,18 +9,19 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
+    permissions: write-all
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file alpine/Dockerfile --tag my-alpine:3.21
-    - uses: docker/build-push-action@v2
-      with:
-        tags: my-alpine:3.21
-        push: false
-    - uses: addnab/docker-run-action@v3
-      with:
-        image: my-alpine:3.21
-        run: echo "hello world"
+    - run: |
+        ls -l
+        cd alpine
+        docker build . --file Dockerfile --tag my-alpine:3.21
+        docker run --name myalpine -dt --entrypoint "/bin/sh" my-alpine:3.21
+        docker export --output=myalpine.tar myalpine
+        gzip myalpine.tar
+        gh release create v0.0.1 myalpine.tar.gz
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
